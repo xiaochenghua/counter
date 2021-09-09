@@ -19,3 +19,11 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+# example
+example/.idea
+example/.dart_tool
+example/android
+example/ios
+example/web
+example/build
