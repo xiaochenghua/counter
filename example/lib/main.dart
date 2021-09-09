@@ -37,9 +37,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: Counter(
             min: 0,
-            max: 8,
-            // initial: ,
-            // bound: ,
+            max: 10,
+            bound: 3,
+            step: 2,
             onValueChanged: print,
           ),
         ),

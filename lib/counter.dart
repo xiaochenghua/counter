@@ -52,25 +52,26 @@ class _CounterState extends State<Counter> {
   /// current value.
   late num _value;
 
-  bool decreaseEnable = false;
-  bool increaseEnable = false;
-  late final num min;
-  late final num max;
+  late final num _min;
+  late final num _max;
+
+  bool _decreaseEnable = false;
+  bool _increaseEnable = false;
 
   void _increase(num increase) {
     if (increase == 0) return;
     final expected = _value + increase;
-    if (expected < min || expected > max) return;
+    if (expected < _min || expected > _max) return;
     _setValue(expected);
   }
 
   void _setValue(num expected) {
     final bound = widget.bound;
     num value = expected;
-    if (bound != null && expected > min && expected < bound) {
+    if (bound != null && expected > _min && expected < bound) {
       // handle bound
       if (_value > expected) {
-        value = min;
+        value = _min;
       } else {
         value = bound;
       }
@@ -79,24 +80,31 @@ class _CounterState extends State<Counter> {
     // set value
     setState(() {
       _value = value;
-      decreaseEnable = _value > min;
-      increaseEnable = _value < max;
     });
+
+    _refreshEnableStatus();
     widget.onValueChanged?.call(_value);
+  }
+
+  void _refreshEnableStatus() {
+    setState(() {
+      _decreaseEnable = _value > _min && _value - widget.step > _min;
+      _increaseEnable = _value < _max && _value + widget.step < _max;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    min = widget.min;
-    max = widget.max;
-    _setValue(widget.initial ?? min);
+    _min = widget.min;
+    _max = widget.max;
+    _setValue(widget.initial ?? _min);
   }
 
   @override
   Widget build(BuildContext context) {
     final configuration = widget.configuration;
-    final textColor = decreaseEnable || increaseEnable
+    final textColor = _decreaseEnable || _increaseEnable
         ? configuration.textColor
         : configuration.disableColor;
     return Stack(
@@ -118,9 +126,9 @@ class _CounterState extends State<Counter> {
     final configuration = widget.configuration;
     final size = configuration.size;
     final leftColor =
-        decreaseEnable ? configuration.iconColor : configuration.disableColor;
+        _decreaseEnable ? configuration.iconColor : configuration.disableColor;
     final rightColor =
-        increaseEnable ? configuration.iconColor : configuration.disableColor;
+        _increaseEnable ? configuration.iconColor : configuration.disableColor;
 
     List<Widget> children;
     switch (configuration.iconStyle) {
@@ -184,8 +192,8 @@ class _CounterState extends State<Counter> {
 
     for (var i = 0; i < children.length; i++) {
       final onTap = i == 0
-          ? (decreaseEnable ? () => _increase(-widget.step) : null)
-          : (increaseEnable ? () => _increase(widget.step) : null);
+          ? (_decreaseEnable ? () => _increase(-widget.step) : null)
+          : (_increaseEnable ? () => _increase(widget.step) : null);
 
       gestures.add(
         InkWell(
@@ -211,7 +219,8 @@ class _CounterState extends State<Counter> {
     final image = Image.asset(
       name,
       width: size,
-      height: size,
+      // height: size,
+      height: double.infinity,
       color: color,
       package: R.package,
     );
