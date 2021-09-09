@@ -1,7 +1,6 @@
 name: counter
 description: A simple counter package.
 version: 0.1.0
-author: xiaochenghua <arnoldxiao@163.com>
 homepage: https://github.com/xiaochenghua/counter
 
 environment:
