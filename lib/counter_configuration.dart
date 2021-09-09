@@ -36,7 +36,7 @@ abstract class CounterConfiguration {
 
 class DefaultCounterConfiguration implements CounterConfiguration {
   @override
-  double get size => 30;
+  double get size => 25;
 
   @override
   double get fontSize => 20;

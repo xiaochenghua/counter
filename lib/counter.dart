@@ -3,7 +3,7 @@ library counter;
 import 'dart:math';
 import 'package:flutter/material.dart';
 import './counter_configuration.dart';
-import './counter_icons.dart';
+import './r.dart';
 
 class Counter extends StatefulWidget {
   Counter({
@@ -12,7 +12,6 @@ class Counter extends StatefulWidget {
     this.initial,
     this.bound,
     this.step = 1,
-    // this.size = 30,
     CounterConfiguration? configuration,
     this.onValueChanged,
     Key? key,
@@ -38,9 +37,6 @@ class Counter extends StatefulWidget {
 
   /// the value of increase or decrease every change.
   final num step;
-
-  // /// height and icon width
-  // final double size;
 
   /// Counter Configuration
   final CounterConfiguration configuration;
@@ -100,53 +96,9 @@ class _CounterState extends State<Counter> {
   @override
   Widget build(BuildContext context) {
     final configuration = widget.configuration;
-    // final size = configuration.size;
-    // final leftColor =
-    //     decreaseEnable ? configuration.iconColor : configuration.disableColor;
-    // final rightColor =
-    //     increaseEnable ? configuration.iconColor : configuration.disableColor;
     final textColor = decreaseEnable || increaseEnable
         ? configuration.textColor
         : configuration.disableColor;
-    // return Container(
-    //   height: size,
-    //   width: size * 2 + 40,
-    //   child: Row(
-    //     mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       InkWell(
-    //         onTap: decreaseEnable ? () => _increase(-widget.step) : null,
-    //         borderRadius: BorderRadius.circular(size / 2),
-    //         child: SizedBox(
-    //           width: size,
-    //           height: double.infinity,
-    //           child: Icon(Icons.remove, color: leftColor),
-    //         ),
-    //       ),
-    // Expanded(
-    //   child: Center(
-    //     child: Text(
-    //       _value.toString(),
-    //       style: TextStyle(
-    //         fontSize: configuration.fontSize,
-    //         color: textColor,
-    //       ),
-    //     ),
-    //   ),
-    // ),
-    //       InkWell(
-    //         onTap: increaseEnable ? () => _increase(widget.step) : null,
-    //         borderRadius: BorderRadius.circular(size / 2),
-    //         child: SizedBox(
-    //           width: size,
-    //           height: double.infinity,
-    //           child: Icon(Icons.add, color: rightColor),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -169,167 +121,68 @@ class _CounterState extends State<Counter> {
         decreaseEnable ? configuration.iconColor : configuration.disableColor;
     final rightColor =
         increaseEnable ? configuration.iconColor : configuration.disableColor;
-    final children = <Widget>[];
+
+    List<Widget> children;
     switch (configuration.iconStyle) {
       case IconStyle.add_minus:
-        children.addAll([
-          Icon(
-            CounterIcons.minus,
-            size: size,
-            color: leftColor,
-          ),
-          Icon(
-            CounterIcons.add,
-            size: size,
-            color: rightColor,
-          )
-        ]);
+        children = [
+          _image(R.minus, leftColor),
+          _image(R.add, rightColor),
+        ];
         break;
       case IconStyle.add_minus_bold:
-        children.addAll([
-          Icon(
-            CounterIcons.minus_bold,
-            size: size,
-            color: leftColor,
-          ),
-          Icon(
-            CounterIcons.add_bold,
-            size: size,
-            color: rightColor,
-          )
-        ]);
+        children = [
+          _image(R.minus_bold, leftColor),
+          _image(R.add_bold, rightColor),
+        ];
         break;
       case IconStyle.add_minus_circle:
-        children.addAll([
-          Icon(
-            CounterIcons.minus_circle,
-            size: size,
-            color: leftColor,
-          ),
-          Icon(
-            CounterIcons.add_circle,
-            size: size,
-            color: rightColor,
-          )
-        ]);
+        children = [
+          _image(R.minus_circle, leftColor),
+          _image(R.add_circle, rightColor),
+        ];
         break;
       case IconStyle.arrow:
-        children.addAll([
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.arrow_right,
-              size: size,
-              color: leftColor,
-            ),
-          ),
-          Icon(
-            CounterIcons.arrow_right,
-            size: size,
-            color: rightColor,
-          )
-        ]);
+        children = [
+          _image(R.arrow_right, leftColor, rotate: true),
+          _image(R.arrow_right, rightColor),
+        ];
         break;
       case IconStyle.arrow_bold:
-        children.addAll([
-          Icon(
-            CounterIcons.arrow_left_bold,
-            size: size,
-            color: leftColor,
-          ),
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.arrow_left_bold,
-              size: size,
-              color: rightColor,
-            ),
-          )
-        ]);
+        children = [
+          _image(R.arrow_left_bold, leftColor),
+          _image(R.arrow_left_bold, rightColor, rotate: true),
+        ];
         break;
       case IconStyle.arrow_double:
-        children.addAll([
-          Icon(
-            CounterIcons.arrow_double_left,
-            size: size,
-            color: leftColor,
-          ),
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.arrow_double_left,
-              size: size,
-              color: rightColor,
-            ),
-          )
-        ]);
+        children = [
+          _image(R.arrow_double_left, leftColor),
+          _image(R.arrow_double_left, rightColor, rotate: true),
+        ];
         break;
       case IconStyle.arrow_circle:
-        children.addAll([
-          Icon(
-            CounterIcons.arrow_left_circle,
-            size: size,
-            color: leftColor,
-          ),
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.arrow_left_circle,
-              size: size,
-              color: rightColor,
-            ),
-          )
-        ]);
+        children = [
+          _image(R.arrow_left_circle, leftColor),
+          _image(R.arrow_left_circle, rightColor, rotate: true),
+        ];
         break;
       case IconStyle.arrow_filling:
-        children.addAll([
-          Icon(
-            CounterIcons.arrow_left_filling,
-            size: size,
-            color: leftColor,
-          ),
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.arrow_left_filling,
-              size: size,
-              color: rightColor,
-            ),
-          )
-        ]);
+        children = [
+          _image(R.arrow_left_filling, leftColor),
+          _image(R.arrow_left_filling, rightColor, rotate: true),
+        ];
         break;
       case IconStyle.direction:
-        children.addAll([
-          Icon(
-            CounterIcons.direction_left,
-            size: size,
-            color: leftColor,
-          ),
-          Transform.rotate(
-            angle: pi,
-            child: Icon(
-              CounterIcons.direction_left,
-              size: size,
-              color: rightColor,
-            ),
-          )
-        ]);
+        children = [
+          _image(R.direction_left, leftColor),
+          _image(R.direction_left, rightColor, rotate: true),
+        ];
         break;
     }
 
-    final sizedboxs = children
-        // .map(
-        //   (e) => SizedBox(
-        //     width: size,
-        //     height: double.infinity,
-        //     child: e,
-        //   ),
-        // )
-        .toList();
-
     final gestures = <InkWell>[];
 
-    for (var i = 0; i < sizedboxs.length; i++) {
+    for (var i = 0; i < children.length; i++) {
       final onTap = i == 0
           ? (decreaseEnable ? () => _increase(-widget.step) : null)
           : (increaseEnable ? () => _increase(widget.step) : null);
@@ -338,12 +191,10 @@ class _CounterState extends State<Counter> {
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(size / 2),
-          child: sizedboxs[i],
+          child: children[i],
         ),
       );
     }
-
-    // Inkwell
 
     return Container(
       width: 2 * size + configuration.textWidth,
@@ -353,5 +204,18 @@ class _CounterState extends State<Counter> {
         children: gestures,
       ),
     );
+  }
+
+  Widget _image(String name, Color color, {bool rotate = false}) {
+    final size = widget.configuration.size;
+    final image = Image.asset(
+      name,
+      width: size,
+      height: size,
+      color: color,
+      package: R.package,
+    );
+    if (!rotate) return image;
+    return Transform.rotate(angle: pi, child: image);
   }
 }

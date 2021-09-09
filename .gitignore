@@ -20,6 +20,9 @@ doc/api/
 *.js.deps
 *.js.map
 
+.DS_Store
+*/.DS_Store
+
 # example
 example/.idea
 example/.dart_tool
