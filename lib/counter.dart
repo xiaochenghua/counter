@@ -2,7 +2,7 @@ library counter;
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-import './counter_configuration.dart';
+import './configuration.dart';
 import './r.dart';
 
 class Counter extends StatefulWidget {
@@ -12,36 +12,38 @@ class Counter extends StatefulWidget {
     this.initial,
     this.bound,
     this.step = 1,
-    CounterConfiguration? configuration,
+    Configuration? configuration,
     this.onValueChanged,
     Key? key,
   })  : assert(min < max),
         assert(initial == null || (initial >= min && initial <= max)),
         assert(bound == null || (bound >= min && bound <= max)),
         assert(initial == null || bound == null || initial >= bound),
-        configuration = configuration ?? DefaultCounterConfiguration(),
+        assert(step > 0),
+        configuration = configuration ?? DefaultConfiguration(),
         super(key: key);
 
-  /// min value.
+  /// 最小值
   final num min;
 
-  /// max value.
+  /// 最大值
   final num max;
 
-  /// initial value,
-  /// If the value is invalid or null，default [min].
+  /// 初始值，如果初始值为null或无效，则初始值为[min]最小值
   final num? initial;
 
-  /// min <= bound <= max
+  /// 限制值
+  /// Value和[initial]不能在([min], [bound])之间
+  /// 但可以是=[min]或=[bound]
   final num? bound;
 
-  /// the value of increase or decrease every change.
+  /// 步进，每次+/- Value变化数值，必须是正数
   final num step;
 
-  /// Counter Configuration
-  final CounterConfiguration configuration;
+  /// 外观配置
+  final Configuration configuration;
 
-  /// value changed callback.
+  /// Value值改变回调
   final ValueChanged<num>? onValueChanged;
 
   @override
@@ -49,64 +51,44 @@ class Counter extends StatefulWidget {
 }
 
 class _CounterState extends State<Counter> {
-  /// current value.
+  /// 当前值
   late num _value;
 
+  /// 最小值
   late final num _min;
+
+  /// 最大值
   late final num _max;
 
+  /// - 是否可用
   bool _decreaseEnable = false;
+
+  /// + 是否可用
   bool _increaseEnable = false;
 
-  void _increase(num increase) {
-    if (increase == 0) return;
-    final expected = _value + increase;
-    if (expected < _min || expected > _max) return;
-    _setValue(expected);
-  }
+  /// 配置
+  late final _configuration;
 
-  void _setValue(num expected) {
-    final bound = widget.bound;
-    num value = expected;
-    if (bound != null && expected > _min && expected < bound) {
-      // handle bound
-      if (_value > expected) {
-        value = _min;
-      } else {
-        value = bound;
-      }
-    }
-
-    // set value
-    setState(() {
-      _value = value;
-    });
-
-    _refreshEnableStatus();
-    widget.onValueChanged?.call(_value);
-  }
-
-  void _refreshEnableStatus() {
-    setState(() {
-      _decreaseEnable = _value > _min && _value - widget.step > _min;
-      _increaseEnable = _value < _max && _value + widget.step < _max;
-    });
-  }
+  /// 圆角
+  late final _borderRadius;
 
   @override
   void initState() {
     super.initState();
     _min = widget.min;
     _max = widget.max;
+    _configuration = widget.configuration;
+    final r = _configuration.iconBorderRadius;
+    final radius = r != null && r > 0 && r <= _configuration.size ? r : 0.0;
+    _borderRadius = BorderRadius.circular(radius);
     _setValue(widget.initial ?? _min);
   }
 
   @override
   Widget build(BuildContext context) {
-    final configuration = widget.configuration;
     final textColor = _decreaseEnable || _increaseEnable
-        ? configuration.textColor
-        : configuration.disableColor;
+        ? _configuration.textColor
+        : _configuration.disableColor;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -114,7 +96,8 @@ class _CounterState extends State<Counter> {
         Text(
           _value.toString(),
           style: TextStyle(
-            fontSize: configuration.fontSize,
+            fontWeight: FontWeight.w300,
+            fontSize: _configuration.fontSize,
             color: textColor,
           ),
         )
@@ -122,109 +105,153 @@ class _CounterState extends State<Counter> {
     );
   }
 
+  /// 背后控件，上层控件则是Text，用于展示Value
   Widget _backend() {
-    final configuration = widget.configuration;
-    final size = configuration.size;
-    final leftColor =
-        _decreaseEnable ? configuration.iconColor : configuration.disableColor;
-    final rightColor =
-        _increaseEnable ? configuration.iconColor : configuration.disableColor;
+    final size = _configuration.size;
+    final leftColor = _decreaseEnable
+        ? _configuration.iconColor
+        : _configuration.disableColor;
+    final rightColor = _increaseEnable
+        ? _configuration.iconColor
+        : _configuration.disableColor;
 
-    List<Widget> children;
-    switch (configuration.iconStyle) {
+    Widget? left;
+    Widget? right;
+
+    switch (_configuration.iconStyle) {
       case IconStyle.add_minus:
-        children = [
-          _image(R.minus, leftColor),
-          _image(R.add, rightColor),
-        ];
+        left = _image(R.minus, leftColor);
+        right = _image(R.add, rightColor);
         break;
       case IconStyle.add_minus_bold:
-        children = [
-          _image(R.minus_bold, leftColor),
-          _image(R.add_bold, rightColor),
-        ];
+        left = _image(R.minus_bold, leftColor);
+        right = _image(R.add_bold, rightColor);
         break;
       case IconStyle.add_minus_circle:
-        children = [
-          _image(R.minus_circle, leftColor),
-          _image(R.add_circle, rightColor),
-        ];
+        left = _image(R.minus_circle, leftColor);
+        right = _image(R.add_circle, rightColor);
         break;
       case IconStyle.arrow:
-        children = [
-          _image(R.arrow_right, leftColor, rotate: true),
-          _image(R.arrow_right, rightColor),
-        ];
+        left = _image(R.arrow_right, leftColor, rotate: true);
+        right = _image(R.arrow_right, rightColor);
         break;
       case IconStyle.arrow_bold:
-        children = [
-          _image(R.arrow_left_bold, leftColor),
-          _image(R.arrow_left_bold, rightColor, rotate: true),
-        ];
+        left = _image(R.arrow_left_bold, leftColor);
+        right = _image(R.arrow_left_bold, rightColor, rotate: true);
         break;
       case IconStyle.arrow_double:
-        children = [
-          _image(R.arrow_double_left, leftColor),
-          _image(R.arrow_double_left, rightColor, rotate: true),
-        ];
+        left = _image(R.arrow_double_left, leftColor);
+        right = _image(R.arrow_double_left, rightColor, rotate: true);
         break;
       case IconStyle.arrow_circle:
-        children = [
-          _image(R.arrow_left_circle, leftColor),
-          _image(R.arrow_left_circle, rightColor, rotate: true),
-        ];
+        left = _image(R.arrow_left_circle, leftColor);
+        right = _image(R.arrow_left_circle, rightColor, rotate: true);
         break;
       case IconStyle.arrow_filling:
-        children = [
-          _image(R.arrow_left_filling, leftColor),
-          _image(R.arrow_left_filling, rightColor, rotate: true),
-        ];
+        left = _image(R.arrow_left_filling, leftColor);
+        right = _image(R.arrow_left_filling, rightColor, rotate: true);
         break;
       case IconStyle.direction:
-        children = [
-          _image(R.direction_left, leftColor),
-          _image(R.direction_left, rightColor, rotate: true),
-        ];
+        left = _image(R.direction_left, leftColor);
+        right = _image(R.direction_left, rightColor, rotate: true);
         break;
     }
 
-    final gestures = <InkWell>[];
-
-    for (var i = 0; i < children.length; i++) {
-      final onTap = i == 0
-          ? (_decreaseEnable ? () => _increase(-widget.step) : null)
-          : (_increaseEnable ? () => _increase(widget.step) : null);
-
-      gestures.add(
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(size / 2),
-          child: children[i],
-        ),
-      );
-    }
+    final spacing = 5.0;
 
     return Container(
-      width: 2 * size + configuration.textWidth,
+      width: 2 * size + 2 * spacing + _configuration.textWidth,
       height: size,
+      color: _configuration.backgroundColor,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: gestures,
+        children: [
+          InkWell(
+            onTap: _decreaseEnable ? () => _increase(-widget.step) : null,
+            borderRadius: _borderRadius,
+            child: left,
+          ),
+          SizedBox(width: spacing),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: _configuration.textBackgroundColor,
+                borderRadius: BorderRadius.circular(2.5),
+              ),
+            ),
+          ),
+          SizedBox(width: spacing),
+          InkWell(
+            onTap: _increaseEnable ? () => _increase(widget.step) : null,
+            borderRadius: _borderRadius,
+            child: right,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _image(String name, Color color, {bool rotate = false}) {
-    final size = widget.configuration.size;
-    final image = Image.asset(
-      name,
+  /// 返回一个Widget，
+  /// [rotate]-是否需要180度顺时针翻转
+  Widget _image(String name, Color? color, {bool rotate = false}) {
+    final size = _configuration.size;
+    final imageSize = size * 4 / 5;
+    final borderWidth = _configuration.iconBorderWidth;
+    final border = borderWidth != null && borderWidth > 0 && color != null
+        ? Border.all(
+            color: color,
+            width: borderWidth,
+          )
+        : null;
+    final sizedbox = Container(
       width: size,
-      // height: size,
-      height: double.infinity,
-      color: color,
-      package: R.package,
+      height: size,
+      decoration: BoxDecoration(border: border, borderRadius: _borderRadius),
+      child: Center(
+        child: Image.asset(
+          name,
+          width: imageSize,
+          height: imageSize,
+          color: color,
+          fit: BoxFit.contain,
+          package: R.package,
+        ),
+      ),
     );
-    if (!rotate) return image;
-    return Transform.rotate(angle: pi, child: image);
+    if (!rotate) return sizedbox;
+    return Transform.rotate(angle: pi, child: sizedbox);
+  }
+
+  /// 增长预判，[increase]可以是负数，表明动作是decrease
+  void _increase(num increase) {
+    if (increase == 0) return;
+    final expected = _value + increase;
+    if (expected < _min || expected > _max) return;
+    _setValue(expected);
+  }
+
+  /// 设置值，[expected]为预期值，不能保证和实际相同
+  void _setValue(num expected) {
+    final bound = widget.bound;
+    num value = expected;
+
+    // bound处理
+    if (bound != null && expected > _min && expected < bound) {
+      // min < 预期值 < bound，根据+/-将值改为bound或min
+      if (_value > expected) {
+        value = _min;
+      } else {
+        value = bound;
+      }
+    }
+
+    // 设值
+    setState(() {
+      _value = value;
+      _decreaseEnable = _value - widget.step >= _min;
+      _increaseEnable = _value + widget.step <= _max;
+    });
+
+    // 执行回调
+    widget.onValueChanged?.call(_value);
   }
 }

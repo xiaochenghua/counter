@@ -1,5 +1,5 @@
 name: counter
-description: A simple counter package.
+description: A package containing custom counters widget.
 version: 0.1.0
 homepage: https://github.com/xiaochenghua/counter
 
@@ -12,12 +12,9 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   assets_scanner: ^2.0.0
   build_runner: ^2.0.6
 
-# The following section is specific to Flutter.
 flutter:
   uses-material-design: true
   assets:
