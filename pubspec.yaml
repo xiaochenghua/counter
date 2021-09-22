@@ -1,5 +1,5 @@
 name: counter
-description: 一个计数器Flutter Widget，可支持配置min/max/initial/bound/step，外观也可配置。
+description: A Flutter counter widget, supports min/max/initial/bound/step value with type int/double, and supports appearance configuration. 
 version: 0.2.0
 homepage: https://github.com/xiaochenghua/counter
 
