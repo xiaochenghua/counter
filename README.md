@@ -1,6 +1,6 @@
 # counter
 
-A new Flutter package project.
+一个计数器Flutter Widget，可支持配置min/max/initial/bound/step，外观也可配置。
 
 ## Getting Started
 

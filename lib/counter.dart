@@ -67,10 +67,10 @@ class _CounterState extends State<Counter> {
   bool _increaseEnable = false;
 
   /// 配置
-  late final _configuration;
+  late final Configuration _configuration;
 
   /// 圆角
-  late final _borderRadius;
+  late final BorderRadius _borderRadius;
 
   @override
   void initState() {
@@ -93,12 +93,17 @@ class _CounterState extends State<Counter> {
       alignment: Alignment.center,
       children: [
         _backend(),
-        Text(
-          _value.toString(),
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            fontSize: _configuration.fontSize,
-            color: textColor,
+        SizedBox(
+          width: _configuration.textWidth,
+          height: _configuration.size,
+          child: Text(
+            _value.toString(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: _configuration.fontSize,
+              color: textColor,
+            ),
           ),
         )
       ],

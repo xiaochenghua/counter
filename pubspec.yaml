@@ -1,6 +1,6 @@
 name: counter
-description: A package containing custom counters widget.
-version: 0.1.0
+description: 一个计数器Flutter Widget，可支持配置min/max/initial/bound/step，外观也可配置。
+version: 0.2.0
 homepage: https://github.com/xiaochenghua/counter
 
 environment:
