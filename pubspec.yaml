@@ -1,6 +1,6 @@
 name: counter
 description: A Flutter counter widget, supports min/max/initial/bound/step value with type int/double, and supports appearance configuration. 
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/xiaochenghua/counter
 
 environment:
