@@ -1,63 +1,67 @@
 # counter
 
-Flutter计数器，支持min/max/initial/bound/step，支持外观配置。
+[简体中文](https://github.com/xiaochenghua/counter/blob/master/README_CN.md)
+
+A Flutter counter widget, supports min/max/initial/bound/step value with type num, and supports appearance configuration.
 
 ## Getting Started
 
-1、添加依赖，```flutter pub get```
+1. Add dependency to ```pubspec.yaml```, and run ```flutter pub get```
 
 ```yaml
-counter: any
+counter: ^0.2.2
 ```
 
-2、导入依赖
+2. import the package
 
 ```dart
 import 'package:counter/counter.dart';
 ```
 
-3、特性支持
-
-- [x] 支持int/double类型value
-
-- [x] 支持最小/最大/初始/限制值类型
-
-- [x] 支持外观只定义配置
-
-- [x] 支持值改变回调
-
-  即将支持...
-
-- [ ] 自定义输入value
-
-4、示例代码
+3. expample code
 
 ```dart
 Counter(
-  /// 最小值
+  /// min value
   min: 0,
   
-  /// 最大值
+  /// max value
   max: 10,
 
-  /// 限制值，如果符合条件，值不可在(min, bound)之间
-  /// 在min点击+之间一步跳至bound，在bound点击-一步跳至min
-  /// 默认null，即不存在限制值，限制值只能在[min, max]之间
+  /// bound value, default null，must be greater than or equal to [min] and less than or equal to [max].
+  /// current value can not be greater than [min] and less than bound if bound is not null and its approved.
+  /// if current value is [min], and bound value greater than [min] too, and the value will be change with bound value by one step after inscrease button clicked.
+  /// and it will be change with [min] value by one step after descrease button clicked.
   bound: 3,
 
-  /// 初始值，默认null，初始值有效区间[min, max]，且initial>=bound
-  /// 如果是null则默认初始值为min
+  /// initial value, default equal to [min], must be greater than or equal to [min] and less than or equal to [max].
+  /// and initial value must be greater or equal to [bound], while bound and initial value both not be null.
   initial: 5,
   
-  /// 步进，默认为1 
+  /// stepper，default 1
   step: 1,
   
-  /// 外观配置，默认DefaultConfiguration()，
-  /// 实现Configuration抽象类可自定义外观配置
+  /// appearance configuration，default DefaultConfiguration()
+  /// you can also set up custom appearance by implements [Configuration] class.
   configuration: DefaultConfiguration(),
   
-  /// 值改变回调
+  /// value changed callback.
   onValueChanged: print,
 )
 ```
+
+
+4. feature support
+
+- [x] support type num(include int/double) values.
+
+- [x] support min/max/initial/bound values.
+
+- [x] support set up custom appearance.
+
+- [x] support value changed callback.
+
+  will soon...
+
+- [ ] type in value from keyboard
 
