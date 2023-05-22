@@ -13,7 +13,7 @@ class Counter extends StatefulWidget {
     Configuration? configuration,
     this.onValueChanged,
     Key? key,
-  })  : assert(min < max),
+  })  : assert(min <= max),
         assert(initial == null || (initial >= min && initial <= max)),
         assert(bound == null || (bound >= min && bound <= max)),
         assert(initial == null || bound == null || initial >= bound),
